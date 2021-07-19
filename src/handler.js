@@ -1,7 +1,7 @@
 const { nanoid } = require('nanoid');
 const notes = require('./notes');
 
-const addNoteHandle = (request, h) => {
+const addNoteHandler = (request, h) => {
   const { title, tags, body } = request.payload;
 
   const id = nanoid(16);
@@ -35,14 +35,14 @@ const addNoteHandle = (request, h) => {
   return response;
 };
 
-const getNotesHandle = () => ({
+const getNotesHandler = () => ({
   status: 'success',
   data: {
     notes,
   },
 });
 
-const getNotesByIdHandle = (request, h) => {
+const getNotesByIdHandler = (request, h) => {
   const { id } = request.params;
 
   const note = notes.filter((n) => n.id === id)[0];
@@ -95,6 +95,28 @@ const editNoteByIdHandler = (request, h) => {
   return response;
 };
 
+const deleteNoteByidHandler = (request, h) => {
+  const { id } = request.params;
+  const index = notes.findIndex((note) => note.id === id);
+
+  if (index !== 1) {
+    notes.splice(index, 1);
+    const response = h.response({
+      status: 'success',
+      message: 'Catatan berhasil dihapus',
+    });
+    response.code(200);
+    return response;
+  }
+
+  const response = h.response({
+    status: 'fail',
+    message: 'Catatan gagal dihapus',
+  });
+  response.code(200);
+  return response;
+};
+
 module.exports = {
-  addNoteHandle, getNotesHandle, getNotesByIdHandle, editNoteByIdHandler,
+  addNoteHandler, getNotesHandler, getNotesByIdHandler, editNoteByIdHandler, deleteNoteByidHandler,
 };
